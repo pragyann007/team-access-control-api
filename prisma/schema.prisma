@@ -1,0 +1,122 @@
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+  // Get a free hosted Postgres database in seconds: `npx create-db`
+
+  generator client {
+    provider = "prisma-client"
+    output   = "../src/generated/prisma"
+    moduleFormat = "cjs"
+  }
+
+  datasource db {
+    provider = "postgresql"
+  }
+
+  model User {
+    id Int @default(autoincrement()) @id
+    name String
+    email String @unique
+    password String 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+    organizations Organizations[]
+    memberships Memberships[]
+    sessions Sessions[]
+    passport_reset PassportResetToken[]
+    audit_logs AuditLogs[]
+  }
+
+  model Organizations {
+    id Int @default(autoincrement()) @id
+    name String
+    slug String
+    ownerId Int
+    owner User @relation(fields: [ownerId],references: [id]) 
+    createdAt DateTime @default(now()) 
+    memberships Memberships[]
+    invitations Invitations[]
+    audit_logs AuditLogs[]
+  }
+
+  model Memberships {
+    id Int @default(autoincrement()) @id 
+    userId Int
+    organizationId Int 
+    roleId Int 
+    user User @relation(fields: [userId],references: [id])
+    organization Organizations @relation(fields: [organizationId],references: [id])
+    joinedAt DateTime @default(now())
+  }
+
+  model Roles {
+    id Int @default(autoincrement()) @id
+    name String
+    description String
+    role_permissions role_permissions[]
+    invitations Invitations[]
+  }
+
+  model Permissions {
+    id Int @default(autoincrement()) @id
+    name String
+    description String
+    role_permissions role_permissions[]
+  }
+
+  model role_permissions {
+    id Int  @default(autoincrement()) @id
+    roleId Int
+    role Roles @relation(fields: [roleId],references: [id])
+    permissionId Int
+    permission Permissions @relation(fields: [permissionId],references: [id])
+
+  }
+
+  model Sessions {
+    id Int @default(autoincrement()) @id
+    userId Int
+    user User @relation(fields: [userId],references: [id])
+    refreshTokenHash String
+    device String
+    ipAddress String
+    userAgent String
+    revoked Boolean
+    expiresAt DateTime
+    revokedAt DateTime?
+    
+
+  }
+
+  model Invitations {
+    id Int @default(autoincrement()) @id
+    organizatioId Int
+    organization Organizations @relation(fields: [organizatioId],references: [id])
+    email String
+    roleId Int
+    role Roles @relation(fields: [roleId],references: [id])
+    tokenHash String
+    expiresAt DateTime
+    acceptedAt DateTime
+  }
+
+  model PassportResetToken {
+    id Int @default(autoincrement()) @id
+    userId Int
+    user User @relation(fields: [userId],references: [id])
+    tokenHash String
+    expiresAt DateTime
+  }
+
+  model AuditLogs {
+    id Int @default(autoincrement()) @id
+    userId Int
+    user User @relation(fields: [userId],references: [id])
+    organizationId Int
+    organizations Organizations @relation(fields: [organizationId],references: [id])
+    action String
+    resource String
+    ipAddress String
+    userAgent String
+    createdAt String
+  }
