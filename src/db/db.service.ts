@@ -14,7 +14,7 @@ export class DbService {
         })
 
         if(user){
-            return {message:"User already exists",user}
+            return {user}
         }
         return {message:"No user with this email in db."}
 
@@ -52,5 +52,58 @@ export class DbService {
             }
 
         })
+        return session ;
     }
+
+    async findOrganization(name,ownerId){
+        const findIfExists = await this.prisma.organizations.findFirst({
+            where:{
+                name,
+                ownerId
+            }
+        })
+
+        return findIfExists;
+    }
+    async createOrganization (data){
+        const {name,slug,ownerId} = data;
+        const orgData = await this.prisma.organizations.create({
+            data:{
+                name,
+                slug,
+                ownerId,
+                
+        
+            }
+        })
+
+        return orgData;
+    }
+
+    async createMemberships(payload){
+        const {userId,organizationId,roleId} = payload;
+        const memberships = await this.prisma.memberships.create({
+            data:{
+                userId,
+                organizationId,
+                roleId
+
+            }
+        })
+
+        return memberships;
+
+    }
+
+
+    // async createOrganizationsAndMemberships(orgData,memberPayload){
+       
+    //     const result = await this.prisma.$transaction(async (tsx)=>{
+    //         const organization = await tsx.organizations.create(orgData);
+
+    //         const memberships = await tsx.memberships.create(memberPayload)
+    //     })
+
+    //     return {}
+    // }
 }

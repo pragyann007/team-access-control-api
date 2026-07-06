@@ -222,6 +222,7 @@ export type role_permissionsOrderByWithRelationInput = {
 
 export type role_permissionsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  roleId_permissionId?: Prisma.role_permissionsRoleIdPermissionIdCompoundUniqueInput
   AND?: Prisma.role_permissionsWhereInput | Prisma.role_permissionsWhereInput[]
   OR?: Prisma.role_permissionsWhereInput[]
   NOT?: Prisma.role_permissionsWhereInput | Prisma.role_permissionsWhereInput[]
@@ -229,7 +230,7 @@ export type role_permissionsWhereUniqueInput = Prisma.AtLeast<{
   permissionId?: Prisma.IntFilter<"role_permissions"> | number
   role?: Prisma.XOR<Prisma.RolesScalarRelationFilter, Prisma.RolesWhereInput>
   permission?: Prisma.XOR<Prisma.PermissionsScalarRelationFilter, Prisma.PermissionsWhereInput>
-}, "id">
+}, "id" | "roleId_permissionId">
 
 export type role_permissionsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -297,6 +298,11 @@ export type Role_permissionsListRelationFilter = {
 
 export type role_permissionsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type role_permissionsRoleIdPermissionIdCompoundUniqueInput = {
+  roleId: number
+  permissionId: number
 }
 
 export type role_permissionsCountOrderByAggregateInput = {

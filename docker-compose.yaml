@@ -34,7 +34,7 @@ services:
     image: redis:7.2-alpine
     container_name: redis_cache
     restart: always
-    command: redis-server --requirepass your_redis_password
+    command: redis-server --requirepass admin123
     ports:
       - "6379:6379"
     volumes:

@@ -6,6 +6,9 @@ import {ConfigModule} from "@nestjs/config"
 import { PrismaModule } from './prisma/prisma.module';
 import { BullModule } from "@nestjs/bullmq"
 import { DbModule } from './db/db.module';
+import { RedisModule } from './redis/redis.module';
+import { UserModule } from './user/user.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
   imports: [
@@ -21,7 +24,10 @@ import { DbModule } from './db/db.module';
     
     AuthModule,
     PrismaModule,
-    DbModule],
+    DbModule,
+    RedisModule,
+    UserModule,
+    OrganizationModule],
   controllers: [AppController],
   providers: [AppService],
 })

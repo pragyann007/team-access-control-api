@@ -214,14 +214,14 @@ export type RolesOrderByWithRelationInput = {
 
 export type RolesWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  name?: string
   AND?: Prisma.RolesWhereInput | Prisma.RolesWhereInput[]
   OR?: Prisma.RolesWhereInput[]
   NOT?: Prisma.RolesWhereInput | Prisma.RolesWhereInput[]
-  name?: Prisma.StringFilter<"Roles"> | string
   description?: Prisma.StringFilter<"Roles"> | string
   role_permissions?: Prisma.Role_permissionsListRelationFilter
   invitations?: Prisma.InvitationsListRelationFilter
-}, "id">
+}, "id" | "name">
 
 export type RolesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
