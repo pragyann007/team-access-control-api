@@ -54,4 +54,12 @@ export class OrganizationService {
 
 
     }
+
+    async inviteMemerToOrganization(data,user){
+        
+
+        return ;
+
+
+    }
 }

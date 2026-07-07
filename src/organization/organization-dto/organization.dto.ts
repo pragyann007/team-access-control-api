@@ -20,3 +20,9 @@ export class createOrganizationDTO {
     slug:string
 
 }
+
+
+export class inviteUserDTO{
+    @IsString()
+    email:string
+}

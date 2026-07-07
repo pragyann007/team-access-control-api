@@ -128,4 +128,35 @@ export class DbService {
 
         return {}
     }
+
+    async findMemberships(data){
+        const {userId,organizationId}  = data ;
+        const membership = await this.prisma.memberships.findFirst({
+            where:{
+                userId,
+                organizationId
+            },
+        
+        })
+
+        return membership;
+    }
+    async findPermissions(roleId){
+        const permissions = await this.prisma.role_permissions.findMany({
+            where:{
+                roleId
+            },
+           select:{
+            permission:{
+                select:{
+                    name:true
+                }
+            }
+           }
+        
+        })
+        const permission = permissions.map((prm)=>prm.permission.name)
+
+        return permission ; 
+    }
 }
