@@ -24,18 +24,34 @@ export class OrganizationService {
             throw new ConflictException("Organization already exists")
         }
 
-        const organization = await this.db.createOrganization(dataPayload);
+        // const organization = await this.db.createOrganization(dataPayload);
 
 
 
         const membershipPayload = {
             userId:dataPayload.ownerId,
-            organizationId:organization.id,
             roleId:1,     
         }
-        const membership = await this.db.createMemberships(membershipPayload)
+        // const membership = await this.db.createMemberships(membershipPayload)
 
-        return {message:"Organization and memberships Created Succesfully",organization}
+
+        const dataPayloads = {
+            organization:{
+                name:data.name,
+                slug:data.slug,
+                ownerId:user.id,
+
+            },
+            roles:{
+                name:"OWNER"
+            },
+        }
+
+
+        const datas  = await this.db.createOrganizationsAndMemberships(dataPayloads)
+
+
+        return {message:"Organization and memberships Created Succesfully",datas}
 
 
 

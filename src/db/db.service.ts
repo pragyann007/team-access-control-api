@@ -96,14 +96,36 @@ export class DbService {
     }
 
 
-    // async createOrganizationsAndMemberships(orgData,memberPayload){
+    async createOrganizationsAndMemberships(data){
        
-    //     const result = await this.prisma.$transaction(async (tsx)=>{
-    //         const organization = await tsx.organizations.create(orgData);
+        const result = await this.prisma.$transaction(async (tsx)=>{
+            const organization = await tsx.organizations.create({
+                data:{
+                    name:data.organization.name,
+                    slug:data.organization.slug,
+                    ownerId:data.organization.ownerId,
+                    
 
-    //         const memberships = await tsx.memberships.create(memberPayload)
-    //     })
+                }
+            });
 
-    //     return {}
-    // }
+            const role = await tsx.roles.findUnique({
+                where:{
+                    name:data.roles.name
+                }
+            })
+
+            const memberships = await tsx.memberships.create({
+                data:{
+                    userId:data.organization.ownerId,
+                    organizationId:organization.id,
+                    roleId:(role as any)?.id
+                }
+            })
+
+            return {organization,memberships}
+        })
+
+        return {}
+    }
 }
