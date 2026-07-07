@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post,  Req, Res, UseGuards } from '@nestjs/common';
+import { ApiOperation,  ApiTags } from '@nestjs/swagger';
 import {  LoginDTO, RegisterDTO } from './auth-dto/auth.dto';
 import { AuthService } from './auth.service';
 import type  {Request, Response } from 'express';
@@ -15,6 +15,7 @@ export class AuthController {
  
    @ApiOperation({summary:"Register Controller",description:"This register the users"})
    @Post("/register")
+   @HttpCode(HttpStatus.CREATED)
    async registerUser(@Body() data:RegisterDTO){
     return this.authService.register(data);
 
@@ -25,6 +26,7 @@ export class AuthController {
     description:"This logins the user and give acess token and refresh token "
    })
    @Post("login")
+   @HttpCode(HttpStatus.OK)
    async loginUser(
     @Body() data:LoginDTO,
     @Req () req:Request,
@@ -68,6 +70,7 @@ export class AuthController {
     description:"This controller will executed or called by client when the accestoken inside client expires and it need to regenerate the access token with the help of refresh token"
    })
    @Post("refresh")
+   @HttpCode(HttpStatus.OK)
    async refresh(
      @Req() req: Request,
      @Res({passthrough:true}) res: Response,
@@ -91,8 +94,16 @@ export class AuthController {
    
 
 
+
+
+  @ApiOperation({
+    summary:"Returns the current users data.",
+    description:"Thisc controller is simpl protected by auth guard that inspects and check the token session availability and verifiesthe user on the basis of that."
+  })   
    @UseGuards(AccessTokenGuard)
    @Get("me")
+   @HttpCode(HttpStatus.OK)
+
    async getMe(@Req() req:Request ){
     return (req as any).user;
 

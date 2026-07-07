@@ -9,13 +9,14 @@ export class OrganizationService {
     }
 
     async createOrganization(data,user){
+        console.log(user)
         if(!data.slug){
             data.slug = data.name.toLowerCase()
         }
         const dataPayload = {
             name:data.name,
             slug:data.slug,
-            ownerId:user.id,
+            ownerId:user.sub,
             
         }
         const exists = await this.db.findOrganization(dataPayload.name,dataPayload.ownerId)
@@ -28,10 +29,7 @@ export class OrganizationService {
 
 
 
-        const membershipPayload = {
-            userId:dataPayload.ownerId,
-            roleId:1,     
-        }
+       
         // const membership = await this.db.createMemberships(membershipPayload)
 
 
@@ -39,7 +37,7 @@ export class OrganizationService {
             organization:{
                 name:data.name,
                 slug:data.slug,
-                ownerId:user.id,
+                ownerId:user.sub,
 
             },
             roles:{
