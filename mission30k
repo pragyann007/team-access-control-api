@@ -1,0 +1,52 @@
+]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api[?1h=[?1l>CONTAINER ID   IMAGE                       COMMAND                  CREATED      STATUS       PORTS                                              NAMES
+aac136fcea94   dpage/pgadmin4              "/entrypoint.sh"         3 days ago   Up 2 hours   443/tcp, 0.0.0.0:5050->80/tcp, [::]:5050->80/tcp   pgadmin_tool
+a1b63f32b477   redis/redisinsight:latest   "./docker-entry.sh n…"   3 days ago   Up 2 hours   0.0.0.0:5540->5540/tcp, :::5540->5540/tcp          redisinsight_tool
+4da2b0969c82   postgres:16-alpine          "docker-entrypoint.s…"   3 days ago   Up 2 hours   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp          postgres_db
+2ab8418779f9   redis:7.2-alpine            "docker-entrypoint.s…"   3 days ago   Up 2 hours   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp          redis_cache
+]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api
+[?1h=[?1l>CONTAINER ID   IMAGE                       COMMAND                  CREATED      STATUS       PORTS                                              NAMES
+aac136fcea94   dpage/pgadmin4              "/entrypoint.sh"         3 days ago   Up 2 hours   443/tcp, 0.0.0.0:5050->80/tcp, [::]:5050->80/tcp   pgadmin_tool
+a1b63f32b477   redis/redisinsight:latest   "./docker-entry.sh n…"   3 days ago   Up 2 hours   0.0.0.0:5540->5540/tcp, :::5540->5540/tcp          redisinsight_tool
+4da2b0969c82   postgres:16-alpine          "docker-entrypoint.s…"   3 days ago   Up 2 hours   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp          postgres_db
+2ab8418779f9   redis:7.2-alpine            "docker-entrypoint.s…"   3 days ago   Up 2 hours   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp          redis_cache
+]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api
+[?1h=]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api
+[?1h=[?1l>CONTAINER ID   IMAGE                                   COMMAND                  CREATED        STATUS                      PORTS                                              NAMES
+aac136fcea94   dpage/pgadmin4                          "/entrypoint.sh"         3 days ago     Up 2 hours                  443/tcp, 0.0.0.0:5050->80/tcp, [::]:5050->80/tcp   pgadmin_tool
+a1b63f32b477   redis/redisinsight:latest               "./docker-entry.sh n…"   3 days ago     Up 2 hours                  0.0.0.0:5540->5540/tcp, :::5540->5540/tcp          redisinsight_tool
+4da2b0969c82   postgres:16-alpine                      "docker-entrypoint.s…"   3 days ago     Up 2 hours                  0.0.0.0:5432->5432/tcp, :::5432->5432/tcp          postgres_db
+2ab8418779f9   redis:7.2-alpine                        "docker-entrypoint.s…"   3 days ago     Up 2 hours                  0.0.0.0:6379->6379/tcp, :::6379->6379/tcp          redis_cache
+f1d631b64cf9   postgres:16-alpine                      "docker-entrypoint.s…"   7 days ago     Exited (0) 6 days ago                                                          local_postgres
+aa5a99f047be   node:20-alpine                          "docker-entrypoint.s…"   11 days ago    Exited (137) 11 days ago                                                       beta
+5d1c633ddfac   node:20-alpine                          "docker-entrypoint.s…"   11 days ago    Exited (137) 11 days ago                                                       gamma
+eff34adfa05b   node:20-alpine                          "docker-entrypoint.s…"   11 days ago    Exited (137) 11 days ago                                                       alpha
+82d2944554c7   babuwa                                  "docker-entrypoint.s…"   13 days ago    Exited (137) 13 days ago                                                       strange_colden
+4742d83b85e4   redis                                   "docker-entrypoint.s…"   4 weeks ago    Exited (0) 4 weeks ago                                                         optimistic_herschel
+ed90b279714f   redis                                   "docker-entrypoint.s…"   4 weeks ago    Exited (0) 4 weeks ago                                                         youthful_turing
+189ad96f33bc   redis                                   "docker-entrypoint.s…"   4 weeks ago    Exited (0) 4 weeks ago                                                         wizardly_williamson
+0041cb5ffdd3   redis                                   "docker-entrypoint.s…"   5 weeks ago    Exited (0) 5 weeks ago                                                         exciting_zhukovsky
+d640c70c8388   redis                                   "docker-entrypoint.s…"   5 weeks ago    Exited (0) 5 weeks ago                                                         exciting_jones
+88d024205956   redis                                   "docker-entrypoint.s…"   5 weeks ago    Exited (0) 5 weeks ago                                                         exciting_torvalds
+0313ec76442b   dpage/pgadmin4:latest                   "/entrypoint.sh"         4 months ago   Created                                                                        pgadmin-api
+ff46bcd3c2ff   postgres:15-alpine                      "docker-entrypoint.s…"   4 months ago   Exited (0) 3 days ago                                                          postgres-api
+c37887055dbd   rabbitmq:3-management                   "docker-entrypoint.s…"   4 months ago   Exited (0) 3 days ago                                                          rabbitmq-api
+c792ff27b50b   mongo:latest                            "docker-entrypoint.s…"   4 months ago   Created                                                                        mongo-api
+4edc32ec9edd   rabbitmq:management                     "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        practisemq
+874575008e00   rabbitmq:management                     "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        rabbitmq
+d60936c9a7e1   rabbitmq                                "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        nervous_pascal
+abc6c6ad06d7   redis                                   "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        nice_babbage
+896ffdaf3ef5   redis                                   "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        affectionate_gould
+58bf9c0b3bfb   redis                                   "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        nice_meitner
+6f44515e99d9   redis                                   "docker-entrypoint.s…"   4 months ago   Exited (0) 4 months ago                                                        epic_knuth
+4ebd66129a89   rediscommander/redis-commander:latest   "/usr/bin/dumb-init …"   5 months ago   Exited (2) 5 months ago                                                        redis-commander
+2c7468f50ff6   redis                                   "docker-entrypoint.s…"   5 months ago   Exited (0) 5 months ago                                                        redis
+a165ed3d93f9   redis/redisinsight:latest               "./docker-entry.sh n…"   5 months ago   Exited (0) 5 months ago                                                        redisinsight
+db1e859aa602   redis                                   "docker-entrypoint.s…"   5 months ago   Exited (0) 5 months ago                                                        kind_wing
+4a1e92aa4310   postgres:latest                         "docker-entrypoint.s…"   5 months ago   Exited (0) 5 months ago                                                        og-postgres-1
+b7a708db8b46   nodeimg                                 "docker-entrypoint.s…"   5 months ago   Exited (137) 5 months ago                                                      flamboyant_galois
+c43628838098   nodeimg                                 "docker-entrypoint.s…"   5 months ago   Exited (137) 5 months ago                                                      kind_meninsky
+2af808042444   ubuntu                                  "/bin/bash"              5 months ago   Exited (137) 5 months ago                                                      bold_gould
+49eefbc7880f   redis/redis-stack:latest                "/entrypoint.sh"         9 months ago   Exited (143) 9 months ago                                                      redis-stack
+]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api
+[?1h=[?1l>[H[2J[3J]0;root@cipher: /home/cipher/mastery/w2/backend_project_stuffs/team-access-control-api
+[?1h=[?1l>

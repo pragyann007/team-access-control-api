@@ -27,6 +27,7 @@ export class PermissionGuard implements CanActivate {
 
     const hasPermissions = permissions.every(permission=>findRoles.includes(permission))
 
+    console.log(hasPermissions,findRoles)
     if(!hasPermissions) throw new UnauthorizedException("You are unauthorised for this task")
     console.log(findRoles,hasPermissions)
     return true;

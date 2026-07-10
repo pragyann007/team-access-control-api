@@ -3,9 +3,10 @@ import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { DbModule } from 'src/db/db.module';
 import { JwtModule } from '@nestjs/jwt';
+import { QueeModule } from 'src/quee/quee.module';
 
 @Module({
-  imports:[DbModule,JwtModule],
+  imports:[DbModule,JwtModule,QueeModule],
   controllers: [OrganizationController],
   providers: [OrganizationService],
 })

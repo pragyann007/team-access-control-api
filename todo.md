@@ -20,3 +20,20 @@
 - [x] unsafe data mutation
 - [x] faulty and inconcistent db service messgae return
 - [x] spelling issues
+
+# invite-organisation
+- [x] invite member
+- [x] when inviting check if thee user is in our db
+- [x] if not create one invitation link
+- [x] attacj the link make it jwt token type
+- [x] add in token weathe ruser  registered o r not igf yes open else nope
+- [x] send mail
+- [ ] create invitation table
+- [x] send response
+
+# acept invite-organisation
+- [ ] check the link
+- [ ] do valdiations
+- [ ] update the invitation table
+- [ ] update the membersip table
+- [ ] update the organisation table

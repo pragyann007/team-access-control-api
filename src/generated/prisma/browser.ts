@@ -67,3 +67,8 @@ export type PassportResetToken = Prisma.PassportResetTokenModel
  * 
  */
 export type AuditLogs = Prisma.AuditLogsModel
+/**
+ * Model prisma
+ * 
+ */
+export type prisma = Prisma.prismaModel

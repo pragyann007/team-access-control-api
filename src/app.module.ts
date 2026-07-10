@@ -18,18 +18,13 @@ import { MailModule } from './mail/mail.module';
     BullModule.forRoot({
       connection:{
         host:"localhost",
-        port:6379
+        port:6379,
+        password:"admin123"
       }
 
     }),
     
     ConfigModule.forRoot({isGlobal:true}),
-    BullModule.forRoot({
-      connection:{
-        host:"localhost",
-        port:6379
-      }
-    }),
     
     AuthModule,
     PrismaModule,

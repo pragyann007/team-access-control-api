@@ -8,7 +8,8 @@ export class QueeService {
     constructor(@InjectQueue("mailQueue") private readonly mailQueue:Queue ){}
 
     async enqueeMail(data){
-        await this.mailQueue.add("send-invitation-mail",data);
+      const job =   await this.mailQueue.add("send-invitation-mail",data);
+        console.log("jon added",job.id)
 
     }
 

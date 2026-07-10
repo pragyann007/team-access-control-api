@@ -7,7 +7,7 @@ export class DbService {
 
     async findUserWithEmail (email){
 
-        const user = await this.prisma.user.findFirst({
+        const user = await this.prisma.user.findUnique({
             where:{
                 email
             }
@@ -81,17 +81,50 @@ export class DbService {
     }
 
     async createMemberships(payload){
-        const {userId,organizationId,roleId} = payload;
-        const memberships = await this.prisma.memberships.create({
-            data:{
-                userId,
-                organizationId,
-                roleId
+        const {userId,organizationId,role,joinedAt} = payload;
+        
+        
 
-            }
+        const result = await this.prisma.$transaction(async(tsx)=>{
+            const roleData = await tsx.roles.findFirst({
+                where:{
+                    name:{
+                        equals:role,
+                        mode:"insensitive"
+                    }
+                }
+            })
+            console.log(roleData)
+            if(!roleData?.id) return {message:"No roles exists"}; 
+
+
+            const ifMembershipExists = await tsx.memberships.findFirst({
+                
+                where:{
+                    userId,
+                    organizationId,
+                    roleId:roleData.id
+                }
+            })
+
+            if(ifMembershipExists) return {error:"Membership of this user for this role in this organisation already exists"}
+
+            const memberships = await tsx.memberships.create({
+                data:{
+                    userId,
+                    organizationId,
+                    roleId:roleData?.id,
+                    joinedAt
+    
+                }
+            })
+            console.log('aich bgaswe',memberships)
+            return memberships;
+
         })
+       
+        return result;
 
-        return memberships;
 
     }
 
@@ -159,4 +192,57 @@ export class DbService {
 
         return permission ; 
     }
+
+    async findIfUserInOrg(uid,orgId){
+ 
+        const res = await this.prisma.memberships.findFirst({
+            where:{
+                userId:uid,
+                organizationId:orgId
+            }
+        })
+
+        return res ; 
+
+    }
+
+    async getOrgName(orgId){
+        const res = await this.prisma.organizations.findUnique({
+            where:{
+                id:orgId
+            }
+        })
+
+        
+
+        return res ;
+    }
+
+    async createInvitation(data){
+        const {organizationId,email,tokenHash,role} = data;
+        const result  = await this.prisma.$transaction(async (tsxx)=>{
+            const roleData = await tsxx.roles.findFirst({
+                where:{
+                    name:role
+                }
+            })
+            if(!roleData?.id) return {error:"No such id found"}
+
+            const invitations = await tsxx.invitations.create({
+                data:{
+                    organizationId,
+                    email,
+                    roleId:roleData?.id ?? undefined,
+                    tokenHash,
+                  
+                }
+            })
+
+            
+
+            return invitations
+        })
+
+    }
+ 
 }

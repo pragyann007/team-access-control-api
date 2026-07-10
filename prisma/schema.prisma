@@ -93,14 +93,14 @@
 
   model Invitations {
     id Int @default(autoincrement()) @id
-    organizatioId Int
-    organization Organizations @relation(fields: [organizatioId],references: [id])
+    organizationId Int
+    organization Organizations @relation(fields: [organizationId],references: [id])
     email String
     roleId Int
     role Roles @relation(fields: [roleId],references: [id])
     tokenHash String
-    expiresAt DateTime
-    acceptedAt DateTime
+    expiresAt DateTime?
+    acceptedAt DateTime?
   }
 
   model PassportResetToken {
@@ -123,3 +123,11 @@
     userAgent String
     createdAt String
   }
+
+
+
+
+model prisma{
+  id Int @id
+  
+}

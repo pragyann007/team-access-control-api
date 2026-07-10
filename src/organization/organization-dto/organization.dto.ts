@@ -25,4 +25,7 @@ export class createOrganizationDTO {
 export class inviteUserDTO{
     @IsString()
     email:string
+
+    @IsString()
+    role:string
 }

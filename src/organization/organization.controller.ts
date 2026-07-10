@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseIntPipe, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { createOrganizationDTO, inviteUserDTO } from './organization-dto/organization.dto';
 
 import type  { Request,Response } from 'express';
@@ -31,7 +31,7 @@ export class OrganizationController {
 
 
 
-    @Permissions("INVITE_lop")
+    @Permissions("INVITE_MEMBER")
     @UseGuards(AccessTokenGuard,MembershipGuard,PermissionGuard)
     @Post(":id/invite")
     inviteUser(
@@ -42,8 +42,18 @@ export class OrganizationController {
         @Body() data:inviteUserDTO ){
 
 
-            return "ok";
-        // return this.organizationService.inviteMemerToOrganization(data,(req as any).user)
+        return this.organizationService.inviteMemerToOrganization(data,(req as any).user,id)
+
+    }
+
+
+    @UseGuards(AccessTokenGuard)
+    @Get("/invite/accept/:inviteId")
+    aceptInvitation(
+        @Req() req:Request,
+        @Param("inviteId") inviteId:string
+    ){
+        return this.organizationService.acceptInvitations(req,inviteId)
 
     }
 
