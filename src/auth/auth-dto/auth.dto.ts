@@ -48,3 +48,24 @@ export class LoginDTO {
     password:string
 
 }
+
+
+
+export class forgotPasswordDTO {
+
+    @ApiProperty({
+        description:"Enail of user",
+        example:"pragyan@gmail.com",
+    })
+    @IsEmail()
+    email:string
+
+
+    @ApiProperty({
+        description:"New Password of user's account.",
+        example:"xyz@13abc%6*",
+    })
+    @IsString()
+    password:string
+
+}

@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import bcrypt from "bcryptjs"
 import { JwtService } from '@nestjs/jwt';
@@ -9,6 +9,7 @@ import Redis from 'ioredis';
 import { loginService, registerService } from './auth,types';
 import * as crypto from "crypto"
 import { create } from 'domain';
+import { find } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -198,5 +199,84 @@ export class AuthService {
                 accessToken,
                 refreshToken
             }
+    }
+
+    async logout(user,deviceType){
+
+        const key = `sessions:${user.sub}-${deviceType}`
+        await this.redis.del(key);
+        return {message:"logged out scuesfully"}
+
+
+
+
+    }
+
+    async forgotPasswordResetWithPassword(data){
+
+        const findIfExists = await this.db.findUserWithEmail(data.email);
+
+        if(!findIfExists.user) throw new NotFoundException("No email exists with this address");
+
+    
+
+        const isOldPassMatch = await bcrypt.compare(data.oldPassword,findIfExists.user.password);
+
+        if(!isOldPassMatch) throw new UnauthorizedException("Invalid Old password");
+
+        const updateUserPassword = this.db.updateUserPassword(data);
+
+        if(!updateUserPassword) throw new InternalServerErrorException("Something went wrong")
+
+        return {message:"password changed sucessfully.",updateUserPassword}
+
+    }
+
+    async generateOtp(data){
+        const findIfExists = await this.db.findUserWithEmail(data.email);
+
+        if(!findIfExists.user) throw new NotFoundException("No email exists with this address");
+
+        const key = `otp:${findIfExists.user.email}`;
+
+        const genOtp = Math.floor(Math.random() * 90000000) + 10000000;
+
+
+        await this.redis.set(key,genOtp,"EX",300)
+
+        return {message:"Otp generated",otp:genOtp}
+
+
+
+
+
+    }
+
+    async verifyOtp(data)
+    {
+        const key = `otp:${data.user.email}`;
+
+        const otp  = await this.redis.get(key)
+
+        if(data.otp !== otp) throw new ForbiddenException("Incorrect Otp..");
+
+        await this.redis.del(key)
+
+        return {message:"otp verified.."}
+
+
+
+    }
+
+    async  forgotPasswordResetWithOtp(data){
+
+        const updateUserPassword = await this.db.updateUserPassword(data)
+      
+
+
+        if(!updateUserPassword) throw new InternalServerErrorException("Something went wrong")
+        
+            return {message:"Password changed sucesfully",updateUserPassword}
+
     }
 }

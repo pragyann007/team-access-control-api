@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post,  Req, Res, UseGuards } from '@nestjs/common';
 import { ApiOperation,  ApiTags } from '@nestjs/swagger';
-import {  LoginDTO, RegisterDTO } from './auth-dto/auth.dto';
+import {  forgotPasswordDTO, LoginDTO, RegisterDTO } from './auth-dto/auth.dto';
 import { AuthService } from './auth.service';
 import type  {Request, Response } from 'express';
 import { AccessTokenGuard } from './guards/access-token/access-token.guard';
@@ -108,5 +108,29 @@ export class AuthController {
     return (req as any).user;
 
    }
+
+
+
+   @ApiOperation({
+    summary:"Logous the current user's device",
+    description:"This controller simply takes ip and device info delete redis session for the device and delete cookie."
+  })   
+   @UseGuards(AccessTokenGuard)
+   @Get("logout")
+   @HttpCode(HttpStatus.OK)
+
+   async logout(@Req() req:Request,@Res() res:Response
+ ){
+  const userIp = req.ip ;
+  const isMobile = req.useragent?.isMobile;
+  const isDesktop = req.useragent?.isDesktop;
+  const browser = req.useragent?.browser;
+  const deviceType = isMobile && !isDesktop?"mobile" : "desktop"
+  
+  res.clearCookie("refresh_token")
+
+  return this.authService.logout((req as any).user,deviceType);
+   }
+
 
 }

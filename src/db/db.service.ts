@@ -256,5 +256,18 @@ export class DbService {
         })
 
     }
+
+    async updateUserPassword(data){
+        const user = await this.prisma.user.update({
+            where:{
+                email:data.email
+            },
+            data:{
+                password:data.newPassword
+            }
+        })
+
+        return user ; 
+    }
  
 }
