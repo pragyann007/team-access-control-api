@@ -219,7 +219,7 @@ export class DbService {
     }
 
     async createInvitation(data){
-        const {organizationId,email,tokenHash,role} = data;
+        const {organizationId,email,tokenHash,role,userId,ipAddress,userAgent} = data;
         const result  = await this.prisma.$transaction(async (tsxx)=>{
             const roleData = await tsxx.roles.findFirst({
                 where:{
@@ -235,6 +235,18 @@ export class DbService {
                     roleId:roleData?.id ?? undefined,
                     tokenHash,
                   
+                }
+            })
+            const auditLogs = await tsxx.auditLogs.create({
+                data:{
+                    userId,
+                    organizationId,
+                    action:"invitation_sent",
+                    resource:"organization",
+                    ipAddress,
+                    userAgent,
+                 
+
                 }
             })
 

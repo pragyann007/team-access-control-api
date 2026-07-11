@@ -41,8 +41,10 @@ export class OrganizationController {
         @Res({passthrough:true}) res:Response,
         @Body() data:inviteUserDTO ){
 
+            const ip = req.ip;
+            const userAgent = req.useragent;
 
-        return this.organizationService.inviteMemerToOrganization(data,(req as any).user,id)
+        return this.organizationService.inviteMemerToOrganization(data,(req as any).user,id,ip,userAgent)
 
     }
 

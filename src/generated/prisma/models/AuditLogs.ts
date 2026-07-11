@@ -46,7 +46,7 @@ export type AuditLogsMinAggregateOutputType = {
   resource: string | null
   ipAddress: string | null
   userAgent: string | null
-  createdAt: string | null
+  createdAt: Date | null
 }
 
 export type AuditLogsMaxAggregateOutputType = {
@@ -57,7 +57,7 @@ export type AuditLogsMaxAggregateOutputType = {
   resource: string | null
   ipAddress: string | null
   userAgent: string | null
-  createdAt: string | null
+  createdAt: Date | null
 }
 
 export type AuditLogsCountAggregateOutputType = {
@@ -213,7 +213,7 @@ export type AuditLogsGroupByOutputType = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt: Date
   _count: AuditLogsCountAggregateOutputType | null
   _avg: AuditLogsAvgAggregateOutputType | null
   _sum: AuditLogsSumAggregateOutputType | null
@@ -247,7 +247,7 @@ export type AuditLogsWhereInput = {
   resource?: Prisma.StringFilter<"AuditLogs"> | string
   ipAddress?: Prisma.StringFilter<"AuditLogs"> | string
   userAgent?: Prisma.StringFilter<"AuditLogs"> | string
-  createdAt?: Prisma.StringFilter<"AuditLogs"> | string
+  createdAt?: Prisma.DateTimeFilter<"AuditLogs"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organizations?: Prisma.XOR<Prisma.OrganizationsScalarRelationFilter, Prisma.OrganizationsWhereInput>
 }
@@ -276,7 +276,7 @@ export type AuditLogsWhereUniqueInput = Prisma.AtLeast<{
   resource?: Prisma.StringFilter<"AuditLogs"> | string
   ipAddress?: Prisma.StringFilter<"AuditLogs"> | string
   userAgent?: Prisma.StringFilter<"AuditLogs"> | string
-  createdAt?: Prisma.StringFilter<"AuditLogs"> | string
+  createdAt?: Prisma.DateTimeFilter<"AuditLogs"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organizations?: Prisma.XOR<Prisma.OrganizationsScalarRelationFilter, Prisma.OrganizationsWhereInput>
 }, "id">
@@ -308,7 +308,7 @@ export type AuditLogsScalarWhereWithAggregatesInput = {
   resource?: Prisma.StringWithAggregatesFilter<"AuditLogs"> | string
   ipAddress?: Prisma.StringWithAggregatesFilter<"AuditLogs"> | string
   userAgent?: Prisma.StringWithAggregatesFilter<"AuditLogs"> | string
-  createdAt?: Prisma.StringWithAggregatesFilter<"AuditLogs"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"AuditLogs"> | Date | string
 }
 
 export type AuditLogsCreateInput = {
@@ -316,7 +316,7 @@ export type AuditLogsCreateInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAudit_logsInput
   organizations: Prisma.OrganizationsCreateNestedOneWithoutAudit_logsInput
 }
@@ -329,7 +329,7 @@ export type AuditLogsUncheckedCreateInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsUpdateInput = {
@@ -337,7 +337,7 @@ export type AuditLogsUpdateInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAudit_logsNestedInput
   organizations?: Prisma.OrganizationsUpdateOneRequiredWithoutAudit_logsNestedInput
 }
@@ -350,7 +350,7 @@ export type AuditLogsUncheckedUpdateInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsCreateManyInput = {
@@ -361,7 +361,7 @@ export type AuditLogsCreateManyInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsUpdateManyMutationInput = {
@@ -369,7 +369,7 @@ export type AuditLogsUpdateManyMutationInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsUncheckedUpdateManyInput = {
@@ -380,7 +380,7 @@ export type AuditLogsUncheckedUpdateManyInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsListRelationFilter = {
@@ -527,7 +527,7 @@ export type AuditLogsCreateWithoutUserInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
   organizations: Prisma.OrganizationsCreateNestedOneWithoutAudit_logsInput
 }
 
@@ -538,7 +538,7 @@ export type AuditLogsUncheckedCreateWithoutUserInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsCreateOrConnectWithoutUserInput = {
@@ -578,7 +578,7 @@ export type AuditLogsScalarWhereInput = {
   resource?: Prisma.StringFilter<"AuditLogs"> | string
   ipAddress?: Prisma.StringFilter<"AuditLogs"> | string
   userAgent?: Prisma.StringFilter<"AuditLogs"> | string
-  createdAt?: Prisma.StringFilter<"AuditLogs"> | string
+  createdAt?: Prisma.DateTimeFilter<"AuditLogs"> | Date | string
 }
 
 export type AuditLogsCreateWithoutOrganizationsInput = {
@@ -586,7 +586,7 @@ export type AuditLogsCreateWithoutOrganizationsInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAudit_logsInput
 }
 
@@ -597,7 +597,7 @@ export type AuditLogsUncheckedCreateWithoutOrganizationsInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsCreateOrConnectWithoutOrganizationsInput = {
@@ -633,7 +633,7 @@ export type AuditLogsCreateManyUserInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsUpdateWithoutUserInput = {
@@ -641,7 +641,7 @@ export type AuditLogsUpdateWithoutUserInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationsUpdateOneRequiredWithoutAudit_logsNestedInput
 }
 
@@ -652,7 +652,7 @@ export type AuditLogsUncheckedUpdateWithoutUserInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsUncheckedUpdateManyWithoutUserInput = {
@@ -662,7 +662,7 @@ export type AuditLogsUncheckedUpdateManyWithoutUserInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsCreateManyOrganizationsInput = {
@@ -672,7 +672,7 @@ export type AuditLogsCreateManyOrganizationsInput = {
   resource: string
   ipAddress: string
   userAgent: string
-  createdAt: string
+  createdAt?: Date | string
 }
 
 export type AuditLogsUpdateWithoutOrganizationsInput = {
@@ -680,7 +680,7 @@ export type AuditLogsUpdateWithoutOrganizationsInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAudit_logsNestedInput
 }
 
@@ -691,7 +691,7 @@ export type AuditLogsUncheckedUpdateWithoutOrganizationsInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AuditLogsUncheckedUpdateManyWithoutOrganizationsInput = {
@@ -701,7 +701,7 @@ export type AuditLogsUncheckedUpdateManyWithoutOrganizationsInput = {
   resource?: Prisma.StringFieldUpdateOperationsInput | string
   ipAddress?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -784,7 +784,7 @@ export type $AuditLogsPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     resource: string
     ipAddress: string
     userAgent: string
-    createdAt: string
+    createdAt: Date
   }, ExtArgs["result"]["auditLogs"]>
   composites: {}
 }
@@ -1217,7 +1217,7 @@ export interface AuditLogsFieldRefs {
   readonly resource: Prisma.FieldRef<"AuditLogs", 'String'>
   readonly ipAddress: Prisma.FieldRef<"AuditLogs", 'String'>
   readonly userAgent: Prisma.FieldRef<"AuditLogs", 'String'>
-  readonly createdAt: Prisma.FieldRef<"AuditLogs", 'String'>
+  readonly createdAt: Prisma.FieldRef<"AuditLogs", 'DateTime'>
 }
     
 

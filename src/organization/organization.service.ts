@@ -55,7 +55,7 @@ export class OrganizationService {
 
     }
 
-    async inviteMemerToOrganization(data,user,orgId){
+    async inviteMemerToOrganization(data,user,orgId,ip,userAgent){
         const findThisUser = await this.db.findUserWithEmail(data.email);
         let registeredUser = findThisUser.user?true:false;
         if(registeredUser){
@@ -96,7 +96,11 @@ export class OrganizationService {
             organizationId:orgId,
             email:user.email,
             role:data.role,
-            tokenHash:inviteToken
+            tokenHash:inviteToken,
+            userId:user,
+            ipAddress:ip,
+            userAgent
+
   }
 
   const invitationCreated = await this.db.createInvitation(invitationPayload);

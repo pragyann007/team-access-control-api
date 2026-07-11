@@ -121,7 +121,7 @@
     resource String
     ipAddress String
     userAgent String
-    createdAt String
+    createdAt DateTime  @default(now())
   }
 
 
