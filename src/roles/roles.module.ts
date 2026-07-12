@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { RolesController } from './roles.controller';
 import { DbModule } from 'src/db/db.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports:[DbModule, JwtModule.register({})],
-  controllers: [UserController],
-  providers: [UserService]
+  controllers: [RolesController],
 })
-export class UserModule {}
+export class RolesModule {}

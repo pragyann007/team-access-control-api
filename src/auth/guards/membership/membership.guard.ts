@@ -1,6 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { find, Observable } from 'rxjs';
 import { DbService } from 'src/db/db.service';
 
 @Injectable()
@@ -15,15 +14,14 @@ export class MembershipGuard implements CanActivate {
     const user = (req as any).user;
     let id  = Number(req.params.id);
     
-    console.log(user)
     const dataPayload = {
       userId: user.sub,
       organizationId: id
     }
     const findMemberships = await this.db.findMemberships(dataPayload);
 
-    if (!findMemberships) throw new UnauthorizedException("You are unauthorised")
-    console.log(findMemberships)
+    if (!findMemberships) throw new ForbiddenException("You are unauthorised")
+
     const payload = {
       membershipId: findMemberships.id,
       organizationId: findMemberships.organizationId,
@@ -31,14 +29,6 @@ export class MembershipGuard implements CanActivate {
     };
 
     (req as any ).memberships = payload ;
-
-
-
-
-
-
-
-
     return true;
   }
 }

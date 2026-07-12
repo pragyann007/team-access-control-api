@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { QueeModule } from 'src/quee/quee.module';
 
 @Module({
-  imports:[DbModule,JwtModule,QueeModule],
+  imports:[DbModule,JwtModule.register({}),QueeModule],
   controllers: [OrganizationController],
   providers: [OrganizationService],
 })

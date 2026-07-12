@@ -1,15 +1,13 @@
-import { ForbiddenException, Inject, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import bcrypt from "bcryptjs"
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import {Request, Response } from 'express';
 import { REDIS_CLIENT } from 'src/redis/redis.constants';
 import Redis from 'ioredis';
 import { loginService, registerService } from './auth,types';
 import * as crypto from "crypto"
-import { create } from 'domain';
-import { find } from 'rxjs';
+import { QueeService } from 'src/quee/quee.service';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +15,21 @@ export class AuthService {
         private readonly db:DbService,
         private jwtService:JwtService,
         private configService:ConfigService,
-        @Inject(REDIS_CLIENT) private readonly redis:Redis
+        @Inject(REDIS_CLIENT) private readonly redis:Redis,
+        private readonly queeService:QueeService
     ){}
 
-    async generateTokens(userId:number,email:string,device:string){
+    getCookieOptions(){
+        const secure = this.configService.get<string>("COOKIE_SECURE") === "true"
+        return {
+            httpOnly:true,
+            secure,
+            sameSite:"strict" as const,
+            maxAge:30*24*60*60*1000
+        }
+    }
 
+    async generateTokens(userId:number,email:string,device:string){
         const accessSecret = this.configService.get<string>('JWT_ACCESS_TOKEN')
         const refreshSecret = this.configService.get<string>("JWT_REFRESH_TOKEN")
 
@@ -34,17 +42,15 @@ export class AuthService {
         const accessToken = await this.jwtService.signAsync(payload,{
             secret:accessSecret,
             expiresIn:"70m"
- })
+        })
 
- const refreshToken = await this.jwtService.signAsync(payload,{
-    secret:refreshSecret,
-    expiresIn:"30d"
- })
+        const refreshToken = await this.jwtService.signAsync(payload,{
+            secret:refreshSecret,
+            expiresIn:"30d"
+        })
 
-
- return {accessToken,refreshToken}
+        return {accessToken,refreshToken}
     }
-
 
     async hashToken (token:string){
         return crypto.createHash("sha256").update(token).digest("hex")
@@ -52,20 +58,17 @@ export class AuthService {
 
     async validateToken(refresh_token,refreshTokenHash){
         const refresh_token_hash =await  this.hashToken(refresh_token);
-
         if(refreshTokenHash===refresh_token_hash){
             return true ; 
         }
-        else{
-            return false ; 
-        }
-
+        return false ; 
     }
+
     async register(data:registerService){
         const findIfExists = await this.db.findUserWithEmail(data.email);
 
         if(findIfExists.user){
-            return {message:"User already registered."};
+            throw new ConflictException("User already registered.")
         }
         const hashedPass = await bcrypt.hash(data.password,12);
 
@@ -77,18 +80,16 @@ export class AuthService {
         const createdUser = await this.db.createUser(normaliseData);
 
        if(!createdUser){
-        return {message:"User creation failed.."}
+        throw new InternalServerErrorException("User creation failed..")
        }
        return createdUser ;
-       
-        
     }
 
     async login(data:loginService,payload){
 
         const findIfExists = await this.db.findUserWithEmail(data.email)
         if(!findIfExists.user){
-            return {message:"User with this email address doesnt exists."}
+            throw new NotFoundException("User with this email address doesnt exists.")
         }
 
         const validatePassword = await bcrypt.compare(data.password,findIfExists.user.password);
@@ -96,18 +97,11 @@ export class AuthService {
         if(!validatePassword){
             throw new UnauthorizedException("Invalid email or password")
         }
-
-  
-        
      
         let expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate()+30)
 
         const {accessToken,refreshToken} = await this.generateTokens(findIfExists.user.id,findIfExists.user.email,payload.deviceType);
-
-
-
-      
 
         const refreshTokenHash = await this.hashToken(refreshToken)
 
@@ -122,12 +116,8 @@ export class AuthService {
         }
 
         const createSession = await this.db.createSessions(sessionPayload);
-        console.log("sessiondb",createSession)
         const key = `sessions:${findIfExists.user.id}-${payload.deviceType}`
-        await this.redis.set(key,JSON.stringify(createSession));
-
-
-
+        await this.redis.set(key,JSON.stringify(createSession),"EX",30*24*60*60);
 
         return {
             message:"Token assigned sucess nd user logged in success.",
@@ -135,81 +125,76 @@ export class AuthService {
             refreshToken,
             createSession
         }
-
     }
 
     async refresh(refresh_token){
-       
         const refreshSecret = this.configService.get<string>("JWT_REFRESH_TOKEN")
 
         if(!refresh_token) throw new UnauthorizedException("No token receieved.")
 
-            const decode_token = await this.jwtService.verifyAsync(refresh_token, { secret: refreshSecret });
+        const decode_token = await this.jwtService.verifyAsync(refresh_token, { secret: refreshSecret });
+        const {sub,email,device} = decode_token ;
+        const key = `sessions:${sub}-${device}`;
 
-            const {sub,email,device} = decode_token ;
-             const key = `sessions:${sub}-${device}`;
+        const redisSessions = await this.redis.get(key);
 
-             console.log(key)
-             const redisSessions = await this.redis.get(key);
-             console.log(redisSessions)
+        if(!redisSessions) {
+            throw new UnauthorizedException("No session was found ") 
+        }
 
-             if(!redisSessions) {
-                 throw new UnauthorizedException("No session was found ") 
-                 }
+        const data = JSON.parse(redisSessions);
+        await this.redis.del(key)
+       
+        const isRefreshHashMatched = await this.validateToken(refresh_token,data.refreshTokenHash)
 
-             const data = JSON.parse(redisSessions);
-             await this.redis.del(key)
+        if(!isRefreshHashMatched) throw new UnauthorizedException("Refres Token expired or dont exists") ;
 
+        const isSessionExpired = Date.now() > new Date(data.expiresAt).getTime();
 
+        if(isSessionExpired) throw new UnauthorizedException("Session has already been expired ") ;
 
-             console.log("rt",refresh_token);
-             console.log("rth",data.refreshTokenHash)
-           
-            const isRefreshHashMatched = await this.validateToken(refresh_token,data.refreshTokenHash)
+        const {accessToken,refreshToken} =await  this.generateTokens(sub,email,device);
 
-            console.log(isRefreshHashMatched)
+        const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
+        const newSessionPayload = {
+            ...data,
+            refreshTokenHash
+        }
 
-             if(!isRefreshHashMatched) throw new UnauthorizedException("Refres Token expired or dont exists") ;
+        await this.redis.set(key,JSON.stringify(newSessionPayload),"EX",30*24*60*60);
 
-             const isSessionExpired = Date.now() > new Date(data.expiresAt).getTime();
-
-             if(isSessionExpired) throw new UnauthorizedException("Session has already been expired ") ;
-
-            //  generate new tokens;
-            console.log("2finish")
-
-
-            const {accessToken,refreshToken} =await  this.generateTokens(sub,email,device);
-
-            const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
-
-            const newSessionPayload = {
-                ...data,
-                refreshTokenHash
-            }
-            
-
-
-            await this.redis.set(key,JSON.stringify(newSessionPayload));
-            console.log("finish")
-
-            return {
-                message:"token rotation success..",
-                accessToken,
-                refreshToken
-            }
+        return {
+            message:"token rotation success..",
+            accessToken,
+            refreshToken
+        }
     }
 
     async logout(user,deviceType){
 
         const key = `sessions:${user.sub}-${deviceType}`
         await this.redis.del(key);
+        await this.db.revokeSessionByDevice(user.sub,deviceType);
         return {message:"logged out scuesfully"}
+    }
 
+    async logoutAll(user){
+        const pattern = `sessions:${user.sub}-*`
+        const keys = await this.redis.keys(pattern);
+        if(keys.length) await this.redis.del(...keys);
+        await this.db.revokeAllSessions(user.sub);
+        return {message:"logged out from all devices sucesfully"}
+    }
 
+    async getSessions(userId:number){
+        const sessions = await this.db.findSessionsByUserId(userId);
+        return {sessions}
+    }
 
-
+    async revokeSession(userId:number,sessionId:number){
+        const result = await this.db.revokeSession(sessionId,userId);
+        return {message:"session revoked sucesfully",result}
     }
 
     async forgotPasswordResetWithPassword(data){
@@ -218,18 +203,15 @@ export class AuthService {
 
         if(!findIfExists.user) throw new NotFoundException("No email exists with this address");
 
-    
-
         const isOldPassMatch = await bcrypt.compare(data.oldPassword,findIfExists.user.password);
 
         if(!isOldPassMatch) throw new UnauthorizedException("Invalid Old password");
 
-        const updateUserPassword = this.db.updateUserPassword(data);
+        const updateUserPassword = await this.db.updateUserPassword(data);
 
         if(!updateUserPassword) throw new InternalServerErrorException("Something went wrong")
 
         return {message:"password changed sucessfully.",updateUserPassword}
-
     }
 
     async generateOtp(data){
@@ -238,45 +220,42 @@ export class AuthService {
         if(!findIfExists.user) throw new NotFoundException("No email exists with this address");
 
         const key = `otp:${findIfExists.user.email}`;
-
-        const genOtp = Math.floor(Math.random() * 90000000) + 10000000;
-
+        const genOtp = String(Math.floor(Math.random() * 90000000) + 10000000);
 
         await this.redis.set(key,genOtp,"EX",300)
 
-        return {message:"Otp generated",otp:genOtp}
+        await this.queeService.enqueeForgotMail({
+            to:data.email,
+            otp:genOtp
+        })
 
-
-
-
-
+        return {message:"Otp generated and sent to email"}
     }
 
     async verifyOtp(data)
     {
-        const key = `otp:${data.user.email}`;
-
+        const key = `otp:${data.email}`;
         const otp  = await this.redis.get(key)
 
         if(data.otp !== otp) throw new ForbiddenException("Incorrect Otp..");
 
         await this.redis.del(key)
+        const verifiedKey = `otp-verified:${data.email}`
+        await this.redis.set(verifiedKey,"true","EX",300)
 
         return {message:"otp verified.."}
-
-
-
     }
 
     async  forgotPasswordResetWithOtp(data){
+        const verifiedKey = `otp-verified:${data.email}`
+        const verified = await this.redis.get(verifiedKey)
+        if(!verified) throw new ForbiddenException("Otp not verified or expired")
 
         const updateUserPassword = await this.db.updateUserPassword(data)
-      
-
 
         if(!updateUserPassword) throw new InternalServerErrorException("Something went wrong")
-        
-            return {message:"Password changed sucesfully",updateUserPassword}
 
+        await this.redis.del(verifiedKey)
+        return {message:"Password changed sucesfully",updateUserPassword}
     }
 }

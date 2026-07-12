@@ -1,71 +1,66 @@
 import { ApiProperty } from "@nestjs/swagger"
-import {} from "class-transformer"
-import { IsEmail,IsString } from "class-validator"
+import { IsEmail,IsString, IsNumberString, IsOptional } from "class-validator"
 
 export class RegisterDTO {
-    @ApiProperty({
-        description:"Name of user",
-        example:"Pragayan",
-    })
+    @ApiProperty({description:"Name of user",example:"Pragayan"})
     @IsString()
     name:string
 
-
-    @ApiProperty({
-        description:"Enail of user",
-        example:"pragyan@gmail.com",
-    })
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
     @IsEmail()
     email:string
 
-
-    @ApiProperty({
-        description:"Password of user's account.",
-        example:"xyz@13abc%6*",
-    })
+    @ApiProperty({description:"Password of user's account.",example:"xyz@13abc%6*"})
     @IsString()
     password:string
-
-
-
 }
 
 export class LoginDTO {
-
-    @ApiProperty({
-        description:"Enail of user",
-        example:"pragyan@gmail.com",
-    })
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
     @IsEmail()
     email:string
 
-
-    @ApiProperty({
-        description:"Password of user's account.",
-        example:"xyz@13abc%6*",
-    })
+    @ApiProperty({description:"Password of user's account.",example:"xyz@13abc%6*"})
     @IsString()
     password:string
-
 }
 
-
-
 export class forgotPasswordDTO {
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
+    @IsEmail()
+    email:string
+}
 
-    @ApiProperty({
-        description:"Enail of user",
-        example:"pragyan@gmail.com",
-    })
+export class verifyOtpDTO {
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
     @IsEmail()
     email:string
 
-
-    @ApiProperty({
-        description:"New Password of user's account.",
-        example:"xyz@13abc%6*",
-    })
+    @ApiProperty({description:"OTP received via email",example:"12345678"})
     @IsString()
-    password:string
+    otp:string
+}
 
+export class resetPasswordDTO {
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
+    @IsEmail()
+    email:string
+
+    @ApiProperty({description:"New Password",example:"xyz@13abc%6*"})
+    @IsString()
+    newPassword:string
+}
+
+export class changePasswordDTO {
+    @ApiProperty({description:"Email of user",example:"pragyan@gmail.com"})
+    @IsEmail()
+    email:string
+
+    @ApiProperty({description:"Old Password",example:"oldpass123"})
+    @IsString()
+    oldPassword:string
+
+    @ApiProperty({description:"New Password",example:"xyz@13abc%6*"})
+    @IsString()
+    newPassword:string
 }

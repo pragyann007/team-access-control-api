@@ -240,18 +240,18 @@ export type OrganizationsOrderByWithRelationInput = {
 
 export type OrganizationsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  slug?: string
   AND?: Prisma.OrganizationsWhereInput | Prisma.OrganizationsWhereInput[]
   OR?: Prisma.OrganizationsWhereInput[]
   NOT?: Prisma.OrganizationsWhereInput | Prisma.OrganizationsWhereInput[]
   name?: Prisma.StringFilter<"Organizations"> | string
-  slug?: Prisma.StringFilter<"Organizations"> | string
   ownerId?: Prisma.IntFilter<"Organizations"> | number
   createdAt?: Prisma.DateTimeFilter<"Organizations"> | Date | string
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   memberships?: Prisma.MembershipsListRelationFilter
   invitations?: Prisma.InvitationsListRelationFilter
   audit_logs?: Prisma.AuditLogsListRelationFilter
-}, "id">
+}, "id" | "slug">
 
 export type OrganizationsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

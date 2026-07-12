@@ -1,6 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { DbService } from 'src/db/db.service';
 import { PERMISSION_KEY } from 'src/permissions/permissions.decorator';
 
@@ -27,9 +26,7 @@ export class PermissionGuard implements CanActivate {
 
     const hasPermissions = permissions.every(permission=>findRoles.includes(permission))
 
-    console.log(hasPermissions,findRoles)
-    if(!hasPermissions) throw new UnauthorizedException("You are unauthorised for this task")
-    console.log(findRoles,hasPermissions)
+    if(!hasPermissions) throw new ForbiddenException("You are unauthorised for this task")
     return true;
   }
 }

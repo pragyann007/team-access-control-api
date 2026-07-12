@@ -10,10 +10,9 @@ import { MailModule } from 'src/mail/mail.module';
         MailModule,
         BullModule.registerQueue({
             name:"mailQueue"
-            
         })
     ],
   providers: [QueeService,MailProcessor],
-  exports:[QueeService,MailProcessor]
+  exports:[QueeService]
 })
 export class QueeModule {}

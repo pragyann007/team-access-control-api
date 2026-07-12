@@ -1,8 +1,3 @@
-  // This is your Prisma schema file,
-  // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-  // Get a free hosted Postgres database in seconds: `npx create-db`
-
   generator client {
     provider = "prisma-client"
     output   = "../src/generated/prisma"
@@ -30,7 +25,7 @@
   model Organizations {
     id Int @default(autoincrement()) @id
     name String
-    slug String
+    slug String @unique
     ownerId Int
     owner User @relation(fields: [ownerId],references: [id]) 
     createdAt DateTime @default(now()) 
@@ -48,6 +43,8 @@
     organization Organizations @relation(fields: [organizationId],references: [id])
     roles Roles @relation(fields: [roleId],references: [id])
     joinedAt DateTime @default(now())
+
+    @@unique([userId, organizationId])
   }
 
   model Roles {
@@ -73,7 +70,6 @@
     permissionId Int
     permission Permissions @relation(fields: [permissionId],references: [id])
     @@unique([roleId, permissionId])
-
   }
 
   model Sessions {
@@ -87,8 +83,6 @@
     revoked Boolean
     expiresAt DateTime
     revokedAt DateTime?
-    
-
   }
 
   model Invitations {
@@ -123,11 +117,3 @@
     userAgent String
     createdAt DateTime  @default(now())
   }
-
-
-
-
-model prisma{
-  id Int @id
-  
-}

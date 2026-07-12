@@ -393,8 +393,7 @@ export const ModelName = {
   Sessions: 'Sessions',
   Invitations: 'Invitations',
   PassportResetToken: 'PassportResetToken',
-  AuditLogs: 'AuditLogs',
-  prisma: 'prisma'
+  AuditLogs: 'AuditLogs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "organizations" | "memberships" | "roles" | "permissions" | "role_permissions" | "sessions" | "invitations" | "passportResetToken" | "auditLogs" | "prisma"
+    modelProps: "user" | "organizations" | "memberships" | "roles" | "permissions" | "role_permissions" | "sessions" | "invitations" | "passportResetToken" | "auditLogs"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1154,80 +1153,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    prisma: {
-      payload: Prisma.$prismaPayload<ExtArgs>
-      fields: Prisma.prismaFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.prismaFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.prismaFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        findFirst: {
-          args: Prisma.prismaFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.prismaFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        findMany: {
-          args: Prisma.prismaFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>[]
-        }
-        create: {
-          args: Prisma.prismaCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        createMany: {
-          args: Prisma.prismaCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.prismaCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>[]
-        }
-        delete: {
-          args: Prisma.prismaDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        update: {
-          args: Prisma.prismaUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        deleteMany: {
-          args: Prisma.prismaDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.prismaUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.prismaUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>[]
-        }
-        upsert: {
-          args: Prisma.prismaUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$prismaPayload>
-        }
-        aggregate: {
-          args: Prisma.PrismaAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePrisma>
-        }
-        groupBy: {
-          args: Prisma.prismaGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PrismaGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.prismaCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PrismaCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -1378,13 +1303,6 @@ export const AuditLogsScalarFieldEnum = {
 } as const
 
 export type AuditLogsScalarFieldEnum = (typeof AuditLogsScalarFieldEnum)[keyof typeof AuditLogsScalarFieldEnum]
-
-
-export const PrismaScalarFieldEnum = {
-  id: 'id'
-} as const
-
-export type PrismaScalarFieldEnum = (typeof PrismaScalarFieldEnum)[keyof typeof PrismaScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1599,7 +1517,6 @@ export type GlobalOmitConfig = {
   invitations?: Prisma.InvitationsOmit
   passportResetToken?: Prisma.PassportResetTokenOmit
   auditLogs?: Prisma.AuditLogsOmit
-  prisma?: Prisma.prismaOmit
 }
 
 /* Types for Logging */

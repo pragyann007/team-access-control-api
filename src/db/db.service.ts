@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as crypto from "crypto"
+import bcrypt from "bcryptjs"
 
 @Injectable()
 export class DbService {
     constructor(private readonly prisma:PrismaService){}
+
+    hashToken(token:string){
+        return crypto.createHash("sha256").update(token).digest("hex")
+    }
 
     async findUserWithEmail (email){
 
@@ -20,20 +26,58 @@ export class DbService {
 
     }
 
+    async findUserById(id:number){
+        const user = await this.prisma.user.findUnique({
+            where:{id},
+            select:{
+                id:true,
+                name:true,
+                email:true,
+                createdAt:true,
+                updatedAt:true
+            }
+        })
+        return user;
+    }
+
     async createUser(data){
-        const {name,email,password} = data ; 
         const user = await this.prisma.user.create({
             data:{
                 name:data.name,
                 email:data.email,
                 password:data.password,
- }
+            },
+            select:{
+                id:true,
+                name:true,
+                email:true,
+                createdAt:true,
+                updatedAt:true
+            }
         })
 
         if(user){
             return user ;
         }
         return null ; 
+    }
+
+    async updateUserProfile(userId:number,data){
+        const user = await this.prisma.user.update({
+            where:{id:userId},
+            data:{
+                name:data.name,
+                email:data.email
+            },
+            select:{
+                id:true,
+                name:true,
+                email:true,
+                createdAt:true,
+                updatedAt:true
+            }
+        })
+        return user;
     }
 
     async createSessions (sessionPayload){
@@ -48,11 +92,67 @@ export class DbService {
                 userAgent,
                 revoked,
                 expiresAt,
-               
             }
-
         })
         return session ;
+    }
+
+    async findSessionsByUserId(userId:number){
+        return this.prisma.sessions.findMany({
+            where:{
+                userId,
+                revoked:false
+            },
+            select:{
+                id:true,
+                device:true,
+                ipAddress:true,
+                userAgent:true,
+                expiresAt:true,
+                revoked:true
+            }
+        })
+    }
+
+    async revokeSession(sessionId:number,userId:number){
+        return this.prisma.sessions.updateMany({
+            where:{
+                id:sessionId,
+                userId,
+                revoked:false
+            },
+            data:{
+                revoked:true,
+                revokedAt:new Date()
+            }
+        })
+    }
+
+    async revokeAllSessions(userId:number){
+        return this.prisma.sessions.updateMany({
+            where:{
+                userId,
+                revoked:false
+            },
+            data:{
+                revoked:true,
+                revokedAt:new Date()
+            }
+        })
+    }
+
+    async revokeSessionByDevice(userId:number,device:string){
+        return this.prisma.sessions.updateMany({
+            where:{
+                userId,
+                device,
+                revoked:false
+            },
+            data:{
+                revoked:true,
+                revokedAt:new Date()
+            }
+        })
     }
 
     async findOrganization(name,ownerId){
@@ -65,6 +165,18 @@ export class DbService {
 
         return findIfExists;
     }
+
+    async findOrganizationById(id:number){
+        return this.prisma.organizations.findUnique({
+            where:{id},
+            include:{
+                owner:{
+                    select:{id:true,name:true,email:true}
+                }
+            }
+        })
+    }
+
     async createOrganization (data){
         const {name,slug,ownerId} = data;
         const orgData = await this.prisma.organizations.create({
@@ -72,18 +184,33 @@ export class DbService {
                 name,
                 slug,
                 ownerId,
-                
-        
             }
         })
 
         return orgData;
     }
 
+    async updateOrganization(id:number,data){
+        return this.prisma.organizations.update({
+            where:{id},
+            data:{
+                name:data.name,
+                slug:data.slug
+            }
+        })
+    }
+
+    async deleteOrganization(id:number){
+        return this.prisma.$transaction(async(tsx)=>{
+            await tsx.auditLogs.deleteMany({where:{organizationId:id}})
+            await tsx.invitations.deleteMany({where:{organizationId:id}})
+            await tsx.memberships.deleteMany({where:{organizationId:id}})
+            return tsx.organizations.delete({where:{id}})
+        })
+    }
+
     async createMemberships(payload){
         const {userId,organizationId,role,joinedAt} = payload;
-        
-        
 
         const result = await this.prisma.$transaction(async(tsx)=>{
             const roleData = await tsx.roles.findFirst({
@@ -94,20 +221,16 @@ export class DbService {
                     }
                 }
             })
-            console.log(roleData)
             if(!roleData?.id) return {message:"No roles exists"}; 
 
-
             const ifMembershipExists = await tsx.memberships.findFirst({
-                
                 where:{
                     userId,
-                    organizationId,
-                    roleId:roleData.id
+                    organizationId
                 }
             })
 
-            if(ifMembershipExists) return {error:"Membership of this user for this role in this organisation already exists"}
+            if(ifMembershipExists) return {error:"Membership of this user in this organisation already exists"}
 
             const memberships = await tsx.memberships.create({
                 data:{
@@ -115,19 +238,14 @@ export class DbService {
                     organizationId,
                     roleId:roleData?.id,
                     joinedAt
-    
                 }
             })
-            console.log('aich bgaswe',memberships)
-            return memberships;
 
+            return memberships;
         })
        
         return result;
-
-
     }
-
 
     async createOrganizationsAndMemberships(data){
        
@@ -137,8 +255,6 @@ export class DbService {
                     name:data.organization.name,
                     slug:data.organization.slug,
                     ownerId:data.organization.ownerId,
-                    
-
                 }
             });
 
@@ -148,18 +264,20 @@ export class DbService {
                 }
             })
 
+            if(!role?.id) return {error:"OWNER role not found. Please run database seed."}
+
             const memberships = await tsx.memberships.create({
                 data:{
                     userId:data.organization.ownerId,
                     organizationId:organization.id,
-                    roleId:(role as any)?.id
+                    roleId:role.id
                 }
             })
 
             return {organization,memberships}
         })
 
-        return {}
+        return result
     }
 
     async findMemberships(data){
@@ -169,11 +287,69 @@ export class DbService {
                 userId,
                 organizationId
             },
-        
         })
 
         return membership;
     }
+
+    async findUserOrganizations(userId:number){
+        const memberships = await this.prisma.memberships.findMany({
+            where:{userId},
+            include:{
+                organization:true,
+                roles:true
+            }
+        })
+        return memberships;
+    }
+
+    async findOrgMembers(organizationId:number){
+        return this.prisma.memberships.findMany({
+            where:{organizationId},
+            include:{
+                user:{
+                    select:{id:true,name:true,email:true}
+                },
+                roles:true
+            }
+        })
+    }
+
+    async removeMember(organizationId:number,userId:number){
+        return this.prisma.memberships.deleteMany({
+            where:{
+                organizationId,
+                userId
+            }
+        })
+    }
+
+    async updateMemberRole(organizationId:number,userId:number,role:string){
+        const result = await this.prisma.$transaction(async(tsx)=>{
+            const roleData = await tsx.roles.findFirst({
+                where:{
+                    name:{
+                        equals:role,
+                        mode:"insensitive"
+                    }
+                }
+            })
+            if(!roleData?.id) return {error:"No role exists"}
+
+            const updated = await tsx.memberships.updateMany({
+                where:{
+                    organizationId,
+                    userId
+                },
+                data:{
+                    roleId:roleData.id
+                }
+            })
+            return updated;
+        })
+        return result;
+    }
+
     async findPermissions(roleId){
         const permissions = await this.prisma.role_permissions.findMany({
             where:{
@@ -186,24 +362,33 @@ export class DbService {
                 }
             }
            }
-        
         })
         const permission = permissions.map((prm)=>prm.permission.name)
 
         return permission ; 
     }
 
+    async findAllRoles(){
+        return this.prisma.roles.findMany()
+    }
+
+    async findRolePermissions(roleId:number){
+        return this.prisma.role_permissions.findMany({
+            where:{roleId},
+            include:{
+                permission:true
+            }
+        })
+    }
+
     async findIfUserInOrg(uid,orgId){
- 
         const res = await this.prisma.memberships.findFirst({
             where:{
                 userId:uid,
                 organizationId:orgId
             }
         })
-
         return res ; 
-
     }
 
     async getOrgName(orgId){
@@ -212,32 +397,29 @@ export class DbService {
                 id:orgId
             }
         })
-
-        
-
         return res ;
     }
 
     async createInvitation(data){
-        const {organizationId,email,tokenHash,role,userId,ipAddress,userAgent} = data;
+        const {organizationId,email,tokenHash,role,userId,ipAddress,userAgent,expiresAt} = data;
         const result  = await this.prisma.$transaction(async (tsxx)=>{
             const roleData = await tsxx.roles.findFirst({
                 where:{
                     name:role
                 }
             })
-            if(!roleData?.id) return {error:"No such id found"}
+            if(!roleData?.id) return {error:"No such role found"}
 
             const invitations = await tsxx.invitations.create({
                 data:{
                     organizationId,
                     email,
-                    roleId:roleData?.id ?? undefined,
+                    roleId:roleData.id,
                     tokenHash,
-                  
+                    expiresAt
                 }
             })
-            const auditLogs = await tsxx.auditLogs.create({
+            await tsxx.auditLogs.create({
                 data:{
                     userId,
                     organizationId,
@@ -245,29 +427,94 @@ export class DbService {
                     resource:"organization",
                     ipAddress,
                     userAgent,
-                 
-
                 }
             })
 
-            
-
             return invitations
         })
+        return result;
+    }
 
+    async findInvitationByTokenHash(tokenHash:string){
+        return this.prisma.invitations.findFirst({
+            where:{tokenHash},
+            include:{role:true}
+        })
+    }
+
+    async findPendingInvitations(organizationId:number){
+        return this.prisma.invitations.findMany({
+            where:{
+                organizationId,
+                acceptedAt:null
+            },
+            include:{role:true}
+        })
+    }
+
+    async revokeInvitation(invitationId:number,organizationId:number){
+        return this.prisma.invitations.deleteMany({
+            where:{
+                id:invitationId,
+                organizationId,
+                acceptedAt:null
+            }
+        })
+    }
+
+    async acceptInvitationRecord(invitationId:number){
+        return this.prisma.invitations.update({
+            where:{id:invitationId},
+            data:{acceptedAt:new Date()}
+        })
+    }
+
+    async createAuditLog(data){
+        return this.prisma.auditLogs.create({data})
+    }
+
+    async findAuditLogs(organizationId:number,page:number=1,limit:number=20){
+        const skip = (page-1)*limit;
+        const [logs,total] = await Promise.all([
+            this.prisma.auditLogs.findMany({
+                where:{organizationId},
+                orderBy:{createdAt:"desc"},
+                skip,
+                take:limit,
+                include:{
+                    user:{select:{id:true,name:true,email:true}}
+                }
+            }),
+            this.prisma.auditLogs.count({where:{organizationId}})
+        ])
+        return {logs,total,page,limit}
     }
 
     async updateUserPassword(data){
+        const hashedPass = await bcrypt.hash(data.newPassword,12);
         const user = await this.prisma.user.update({
             where:{
                 email:data.email
             },
             data:{
-                password:data.newPassword
+                password:hashedPass
+            },
+            select:{
+                id:true,
+                name:true,
+                email:true
             }
         })
-
         return user ; 
     }
  
+    async checkifMembership(data){
+        const result = await this.prisma.memberships.findFirst({
+            where:{
+                userId:data.userId,
+                organizationId:data.orgId,
+            }
+        })
+        return result;
+    }
 }

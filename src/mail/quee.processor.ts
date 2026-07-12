@@ -15,33 +15,22 @@ export class MailProcessor extends WorkerHost {
     super();
   }
 
-
   async process(job: Job<any, any, string>): Promise<any> {
-
-    this.logger.log(
-      `Processing job ${job.id} of type ${job.name}...`
-    );
-
+    this.logger.log(`Processing job ${job.id} of type ${job.name}...`);
 
     switch (job.name) {
-
       case jobName.invite:
-        console.log('hi')
-
         await this.mailService.sendInviteMail(job.data);
-
-        this.logger.log(
-          `Invite email sent successfully`
-        );
-
+        this.logger.log(`Invite email sent successfully`);
         break;
 
+      case jobName.forgot:
+        await this.mailService.sendForgotPasswordMail(job.data);
+        this.logger.log(`Forgot password email sent successfully`);
+        break;
 
       default:
-
-        throw new Error(
-          `Unknown job name/type: ${job.name}`
-        );
+        throw new Error(`Unknown job name/type: ${job.name}`);
     }
   }
 }

@@ -60,8 +60,7 @@ export const ModelName = {
   Sessions: 'Sessions',
   Invitations: 'Invitations',
   PassportResetToken: 'PassportResetToken',
-  AuditLogs: 'AuditLogs',
-  prisma: 'prisma'
+  AuditLogs: 'AuditLogs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -191,13 +190,6 @@ export const AuditLogsScalarFieldEnum = {
 } as const
 
 export type AuditLogsScalarFieldEnum = (typeof AuditLogsScalarFieldEnum)[keyof typeof AuditLogsScalarFieldEnum]
-
-
-export const PrismaScalarFieldEnum = {
-  id: 'id'
-} as const
-
-export type PrismaScalarFieldEnum = (typeof PrismaScalarFieldEnum)[keyof typeof PrismaScalarFieldEnum]
 
 
 export const SortOrder = {
