@@ -1,39 +1,134 @@
-# auth
-- [x] register controller
-- [x] login controllelr
-- [x] acess and refresh token rotation
-- [x] configure bullmq and other stuff
-- [x] maintain api docs
+# Todo
+- [ ] [P0] Fix invite link URL mismatch (`/organizations/...` vs `/organization/...`)
+- [ ] [P0] Fix `createInvitation()` storing inviter email instead of invitee email
+- [ ] [P0] Validate invite JWT signature and expiry on acceptance
+- [ ] [P0] Reject already-accepted invitations
+- [ ] [P0] Set `Invitations.acceptedAt` on acceptance
+- [ ] [P0] Prevent duplicate membership on invite accept
+- [ ] [P0] Write audit log on invite acceptance
+- [ ] [P0] Hash invitation tokens before storing in DB
+- [ ] [P0] Add invitation expiry (`expiresAt`) when creating invitations
+- [ ] [P0] Fix `createOrganizationsAndMemberships()` returning `{}`
+- [ ] [P0] Handle missing `OWNER` role gracefully on org creation
+- [ ] [P0] Add unique constraint on `Organizations.slug`
+- [ ] [P0] Fix BullMQ queue name mismatch (`emailQuee` vs `mailQueue`)
+- [ ] [P0] Fix mail template using `data.name` instead of `orgName`
+- [ ] [P0] Remove `console.log` debug statements from services and guards
+- [ ] [P0] Mark `Sessions.revoked = true` in DB on logout
+- [ ] [P0] Hash password in `updateUserPassword()` and `forgotPasswordResetWithOtp()`
+- [ ] [P0] Fix logout endpoint response handling with `@Res()`
+- [ ] [P0] Set consistent cookie options on refresh (`httpOnly`, `secure`, `maxAge`, `sameSite`)
+- [ ] [P0] Remove orphan `prisma` model from schema
+- [ ] [P0] Add unique constraint on `Memberships(userId, organizationId)`
+- [ ] [P0] Make `Invitations.expiresAt` and `acceptedAt` nullable
+- [ ] [P0] Register global `ValidationPipe` in `main.ts`
+- [ ] [P0] Externalize Redis config to env vars (remove hardcoded `admin123`)
+- [ ] [P0] Externalize BullMQ config to env vars
+- [ ] [P0] Add `.env.example` with all required variables
+- [ ] [P0] Ensure `.env` is in `.gitignore`
+- [ ] [P1] `POST /auth/forgot-password` — OTP generation + email queue
+- [ ] [P1] `POST /auth/verify-otp` — verify OTP from Redis
+- [ ] [P1] `POST /auth/reset-password` — reset password after OTP
+- [ ] [P1] `POST /auth/change-password` — change password with old password
+- [ ] [P1] Queue forgot-password email via BullMQ
+- [ ] [P1] `POST /auth/logout-all` — revoke all sessions
+- [ ] [P1] `GET /auth/sessions` — list active sessions
+- [ ] [P1] `DELETE /auth/sessions/:id` — revoke specific session
+- [ ] [P1] `GET /users/me` — user profile (exclude password)
+- [ ] [P1] `PATCH /users/me` — update name/email
+- [ ] [P1] `GET /users/me/organizations` — list user's orgs
+- [ ] [P1] `GET /organization/:id` — org details (`VIEW_ORGANIZATION`)
+- [ ] [P1] `PATCH /organization/:id` — update org (`UPDATE_ORGANIZATION`)
+- [ ] [P1] `DELETE /organization/:id` — delete org (`DELETE_ORGANIZATION`)
+- [ ] [P1] `GET /organization/:id/members` — list members (`VIEW_MEMBERS`)
+- [ ] [P1] `DELETE /organization/:id/members/:userId` — remove member (`REMOVE_MEMBER`)
+- [ ] [P1] `PATCH /organization/:id/members/:userId/role` — change role (`UPDATE_MEMBER_ROLE`)
+- [ ] [P1] `GET /organization/:id/invitations` — list pending invitations
+- [ ] [P1] `DELETE /organization/:id/invitations/:inviteId` — revoke invitation
+- [ ] [P1] `GET /organization/:id/audit-logs` — paginated audit logs (`VIEW_AUDIT_LOGS`)
+- [ ] [P1] Expand audit logging (login, logout, role changes, member removal)
+- [ ] [P1] Enable `secure` + `sameSite` on refresh cookies (env-driven)
+- [ ] [P1] Configure CORS from `CORS_ORIGINS` env var
+- [ ] [P1] Add Helmet middleware
+- [ ] [P1] Add rate limiting on auth endpoints (`@nestjs/throttler`)
+- [ ] [P1] Use `ForbiddenException` (403) in `PermissionGuard` and `MembershipGuard`
+- [ ] [P1] Add request body size limits
+- [ ] [P1] Create application `Dockerfile` (multi-stage)
+- [ ] [P1] Add API service to `docker-compose.yaml`
+- [ ] [P1] Add `docker-compose.prod.yaml`
+- [ ] [P1] Add `ConfigService` validation schema (fail fast on missing env)
+- [ ] [P1] `GET /health` — DB + Redis connectivity check
+- [ ] [P1] `GET /ready` — readiness probe endpoint
+- [ ] [P1] Global exception filter with consistent error response shape
+- [ ] [P1] Global logging interceptor with request/correlation ID
+- [ ] [P1] Replace soft-error 200 responses with proper HTTP exceptions
+- [ ] [P1] Standardize `DbService` return types
+- [ ] [P1] Add `@ApiResponse` decorators on all controllers
+- [ ] [P1] Add `@ApiBearerAuth()` on protected routes in Swagger
+- [ ] [P1] Unit tests — `AuthService` (register, login, refresh, logout, OTP)
+- [ ] [P1] Unit tests — `AccessTokenGuard`
+- [ ] [P1] Unit tests — `MembershipGuard`
+- [ ] [P1] Unit tests — `PermissionGuard`
+- [ ] [P1] Unit tests — `OrganizationService`
+- [ ] [P1] Unit tests — `DbService`
+- [ ] [P1] E2E — auth flow (register → login → me → refresh → logout)
+- [ ] [P1] E2E — org flow (create → invite → accept)
+- [ ] [P1] E2E — RBAC (member without `INVITE_MEMBER` gets 403)
+- [ ] [P1] E2E — validation (invalid email returns 400)
+- [ ] [P1] Test database setup (separate `DATABASE_URL`)
+- [ ] [P1] Redis mock/test instance for auth tests
+- [ ] [P1] Set Jest coverage threshold (70% on services/guards)
+- [ ] [P1] GitHub Actions — lint, test, e2e, build, migration validation
+- [ ] [P1] Branch protection — require CI pass before merge
+- [ ] [P2] `GET /roles` — list available roles
+- [ ] [P2] `GET /roles/:id/permissions` — list role permissions
+- [ ] [P2] Add `isEmailVerified` to User model + `POST /auth/verify-email`
+- [ ] [P2] Send verification email on registration via BullMQ
+- [ ] [P2] Argon2 password hashing (replace bcryptjs)
+- [ ] [P2] CSRF protection for cookie-based refresh flow
+- [ ] [P2] Token blacklist in Redis for compromised sessions
+- [ ] [P2] API versioning prefix (`/v1/...`)
+- [ ] [P2] Pagination DTOs for list endpoints
+- [ ] [P2] Cache role permissions in Redis
+- [ ] [P2] Redis TTL on session keys matching token expiry
+- [ ] [P2] DB indexes on Memberships, Sessions, Invitations, AuditLogs
+- [ ] [P2] Structured logging with Pino/Winston
+- [ ] [P2] OpenTelemetry / APM integration
+- [ ] [P2] Prometheus metrics endpoint
+- [ ] [P2] Rename `PassportResetToken` → `PasswordResetToken`
+- [ ] [P2] Rename `QueeModule` → `QueueModule`
+- [ ] [P2] Fix filename `auth,types.ts` → `auth.types.ts`
+- [ ] [P2] Response DTOs — exclude password from all user responses
+- [ ] [P2] Husky + lint-staged pre-commit hook
+- [ ] [P2] `CONTRIBUTING.md` + `CHANGELOG.md`
+- [ ] [P2] Docker image push to registry on tag
+- [ ] [P2] Staging + production deployment pipelines
+- [ ] [P2] Dependabot / `pnpm audit` in CI
 
-# toke-rotation-flow
-- [x] refresh route
-- [x] lok for refresh token inside cookie in request object
-- [x] validate the refreshtoken by comparing its hash woth redis store
-- [x] check for session activeness
-- [x] generate new acces token and refresh token
-- [x] send acesstoken and set cookie for refreh token
-- [ ] New Task
+# Doing
+- [ ] Move items here when you start working on them
 
-# severe bugs in codes fix
-- [x] express req,res leaked over service service just have to have access to business logics.
-- [x] bcrypt js cpu bottleneck
-- [x] unsafe data mutation
-- [x] faulty and inconcistent db service messgae return
-- [x] spelling issues
-
-# invite-organisation
-- [x] invite member
-- [x] when inviting check if thee user is in our db
-- [x] if not create one invitation link
-- [x] attacj the link make it jwt token type
-- [x] add in token weathe ruser  registered o r not igf yes open else nope
-- [x] send mail
-- [ ] create invitation table
-- [x] send response
-
-# acept invite-organisation
-- [ ] check the link
-- [ ] do valdiations
-- [ ] update the invitation table
-- [ ] update the membersip table
-- [ ] update the organisation table
+# Done
+- [x] Register controller
+- [x] Login controller
+- [x] Access + refresh token rotation
+- [x] Configure BullMQ and Redis
+- [x] Swagger API docs at `/api`
+- [x] Refresh route with cookie-based token lookup
+- [x] Refresh token hash validation against Redis
+- [x] Session activeness check on refresh
+- [x] Invite member endpoint
+- [x] Check if invitee exists in DB before inviting
+- [x] JWT-based invitation link generation
+- [x] Invitation email via BullMQ + Nodemailer
+- [x] RBAC guard pipeline (AccessToken → Membership → Permission)
+- [x] Roles + permissions seed data
+- [x] Organization creation with OWNER membership
+- [x] Audit log on invitation sent
+- [x] Fix express req/res leaking into services
+- [x] Fix bcrypt CPU bottleneck
+- [x] Fix unsafe data mutation
+- [x] Fix inconsistent DbService return messages
+- [x] Fix spelling issues in responses
+- [x] Invitations table in Prisma schema
+- [x] Production README.md with architecture docs

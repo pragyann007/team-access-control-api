@@ -75,7 +75,7 @@ export class OrganizationService {
         })
 
 
-        let inviteLink = `${this.configService.get<string>("SERVER_URL")}/organizations/invite/accept/${inviteToken}`;
+        let inviteLink = `${this.configService.get<string>("SERVER_URL")}/organization/invite/accept/${inviteToken}`;
 
         let org = await this.db.getOrgName(orgId);
         if(!org){
